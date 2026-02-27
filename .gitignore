@@ -25,6 +25,10 @@ venv/
 ENV/
 env/
 
+# Environment variables
+.env
+.env.local
+
 # Test outputs
 review_output/
 

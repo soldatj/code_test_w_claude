@@ -51,6 +51,9 @@ python -m code_reviewer [디렉토리] --output [출력디렉토리]
 
 - `[디렉토리]`: 분석할 디렉토리 (기본값: 현재 디렉토리)
 - `--output`, `-o`: 리포트 출력 디렉토리 (기본값: `review_output`)
+- `--notion`: 리뷰 결과를 Notion 페이지로 전송
+- `--notion-database`: 리뷰 결과를 Notion 데이터베이스에 저장
+- `--notion-guide`: Notion 연동 설정 가이드 표시
 
 ### 예시
 
@@ -63,7 +66,63 @@ python -m code_reviewer ~/Projects/myapp/src
 
 # 커스텀 출력 디렉토리
 python -m code_reviewer myapp --output reports
+
+# Notion 페이지로 전송
+python -m code_reviewer myapp --notion
+
+# Notion 데이터베이스에 저장
+python -m code_reviewer myapp --notion-database
 ```
+
+## 📊 Notion 연동
+
+코드 리뷰 결과를 Notion에 자동으로 저장할 수 있습니다.
+
+### 설정 방법
+
+1. **Notion Integration 생성**:
+   ```bash
+   python -m code_reviewer --notion-guide
+   ```
+
+   가이드를 따라서 Integration을 생성하세요.
+
+2. **환경변수 설정**:
+
+   **Linux/macOS:**
+   ```bash
+   export NOTION_TOKEN="your_integration_token"
+   export NOTION_PAGE_ID="your_page_id_or_database_id"
+   ```
+
+   **Windows (PowerShell):**
+   ```powershell
+   $env:NOTION_TOKEN = "your_integration_token"
+   $env:NOTION_PAGE_ID = "your_page_id_or_database_id"
+   ```
+
+   **.env 파일 사용 (권장):**
+   ```bash
+   pip install python-dotenv
+   echo 'NOTION_TOKEN=your_token' > .env
+   echo 'NOTION_PAGE_ID=your_page_id' >> .env
+   ```
+
+3. **페이지/데이터베이스 연결**:
+   - Notion에서 리뷰를 저장할 페이지/데이터베이스 열기
+   - 우측 상단 "..." 메뉴 → "Add connections"
+   - 생성한 Integration 선택
+
+4. **데이터베이스 사용 시 컬럼 설정**:
+   다음 컬럼이 필요합니다:
+   - Title (title 타입)
+   - Directory (text 타입)
+   - Files (number 타입)
+   - Bugs (number 타입)
+   - Style Issues (number 타입)
+   - Performance Issues (number 타입)
+   - Security Issues (number 타입)
+   - Date (date 타입)
 
 ## 📁 프로젝트 구조
 

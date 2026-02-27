@@ -26,6 +26,21 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Output directory for reports (default: review_output)",
     )
     parser.add_argument(
+        "--notion",
+        action="store_true",
+        help="Send review results to Notion page",
+    )
+    parser.add_argument(
+        "--notion-database",
+        action="store_true",
+        help="Send review results to Notion database (requires NOTION_PAGE_ID to be a database ID)",
+    )
+    parser.add_argument(
+        "--notion-guide",
+        action="store_true",
+        help="Show Notion integration setup guide",
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version="%(prog)s 0.1.0",
@@ -36,6 +51,12 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+
+    # Notion 가이드 출력
+    if args.notion_guide:
+        from code_reviewer.notion_exporter import create_notion_integration_guide
+        create_notion_integration_guide()
+        return 0
 
     directory = os.path.abspath(args.directory)
 
@@ -82,6 +103,29 @@ def main(argv=None) -> int:
         print("Reports:")
         print(f"  JSON : {report_paths.get('json')}")
         print(f"  Text : {report_paths.get('text')}")
+
+    # ---- Notion export ----
+    if args.notion or args.notion_database:
+        from code_reviewer.notion_exporter import NotionExporter
+
+        try:
+            exporter = NotionExporter()
+
+            if args.notion:
+                # 페이지에 블록 추가
+                exporter.export_report(aggregated, directory)
+
+            if args.notion_database:
+                # 데이터베이스에 레코드 추가
+                exporter.export_to_database(aggregated, directory)
+
+        except ImportError as e:
+            print(f"\n⚠️ Notion export failed: {e}")
+            print("Install required package: pip install notion-client")
+            return 1
+        except Exception as e:
+            print(f"\n❌ Notion export error: {e}")
+            return 1
 
     return 0
 
